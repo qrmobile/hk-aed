@@ -21,7 +21,13 @@
   <link rel="canonical" href="https://hkaed.pages.dev/">
   <link rel="alternate" hreflang="zh-Hant-HK" href="https://hkaed.pages.dev/">
   <link rel="alternate" hreflang="x-default" href="https://hkaed.pages.dev/">
-  <link rel="icon" href="data:,">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="AED 搜尋器">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <title>香港 AED 地圖｜搜尋附近自動心臟除顫器位置</title>
   <script type="application/ld+json">
@@ -871,6 +877,8 @@
       });
 
       els.locateBtn.addEventListener('click', locate);
+      // 緊急用途：開頁即自動請求定位，撳入嚟就係要搵最近嘅 AED
+      locate();
       els.retryBtn.addEventListener('click', locate);
       els.publicToggle.addEventListener('click', function () {
         state.publicOnly = !state.publicOnly;
