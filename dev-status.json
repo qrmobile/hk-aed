@@ -1,0 +1,26 @@
+{
+  "app": "hkaed",
+  "name": "香港 AED 搜尋器",
+  "url": "https://hkaed.pages.dev/",
+  "status": "live",
+  "updated": "2026-10-23",
+  "managedBy": "Daniel's AI agents, jointly. READ THIS FILE before changing or redeploying this site, and UPDATE it (and the changelog) after you do. A Pages redeploy replaces ALL files, so a deploy directory must contain every file listed below.",
+  "files": [
+    "site/ — index.html, aed_data.json, aed_meta.json, icons; GSC package files already in site/: _worker.js, google1f94042d93f7e344.html, robots.txt, sitemap.xml (not yet deployed)",
+    "deploy: pages_deploy.py <site_dir> hk-aed (project root, run with this project's venv python); pages_deploy.py already uploads _worker.js as a dedicated form part"
+  ],
+  "cautions": [
+    "STANDING RULE (Daniel, 2026-10-18): every data or frontend update must also be pushed to GitHub repo qrmobile/hk-aed. update_aed_data.py auto-pushes aed_data.json; large files go via gh_push.py (github push-files). The GitHub connector pushes text only — binary assets need Daniel to upload manually.",
+    "Zero-token hook hk-aed-data-watch compares the Fire Services CSV hash every 12h and only wakes the worker on real change; do not re-add the old daily cron.",
+    "Deploying the prepared GSC package switches this site from pure static to Pages advanced mode — verify the whole site afterwards, then push to GitHub.",
+    "A citizen-reporting feature draft exists (Worker+KV, Telegram review). Do NOT deploy it without Daniel approving the draft.",
+    "Fire Services data contains no AED photos anywhere — do not go looking again."
+  ],
+  "changelog": [
+    {
+      "date": "2026-10-23",
+      "by": "Muse (main-chat agent)",
+      "change": "Added this dev-status.json, adopting the cross-agent convention established on qrm/aehk, and deployed it live on 2026-10-23 at Daniel's instruction. Detailed local log: DEVLOG.md in the project root (Muse's workspace)."
+    }
+  ]
+}
