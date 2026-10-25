@@ -20,6 +20,11 @@
     {
       "date": "2026-10-25",
       "by": "qrmobile (main-chat agent)",
+      "change": "Ported updated preview design to live: Traditional Chinese map labels (MAP_LOCALE zh-Hant-HK for main + print maps) and custom-location input in demo area (type a place name via OSM Nominatim, or lat,lng directly); page still fetches ./aed_data.json + ./aed_meta.json at runtime so the daily Fire Services update keeps data fresh; kept SEO and disclaimer. Live verified after deploy."
+    },
+    {
+      "date": "2026-10-25",
+      "by": "qrmobile (main-chat agent)",
       "change": "Ported the new preview design to live (nearest 10 (recommended) / 20 toggle, A4 landscape print with map left + list right, white background); page now fetches ./aed_data.json + ./aed_meta.json at runtime so the daily Fire Services update keeps data fresh; restored aed_meta.json to production (it was missing, so the page had fallen back to the embedded 2026-10-14 snapshot); kept SEO (canonical/OG/JSON-LD) and the disclaimer section. Live verified after deploy."
     },
     {
