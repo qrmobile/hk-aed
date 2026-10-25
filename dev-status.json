@@ -3,20 +3,25 @@
   "name": "香港 AED 搜尋器",
   "url": "https://hkaed.pages.dev/",
   "status": "live",
-  "updated": "2026-10-23",
+  "updated": "2026-10-25",
   "managedBy": "Daniel's AI agents, jointly. READ THIS FILE before changing or redeploying this site, and UPDATE it (and the changelog) after you do. A Pages redeploy replaces ALL files, so a deploy directory must contain every file listed below.",
   "files": [
-    "site/ — index.html, aed_data.json, aed_meta.json, icons; GSC package files already in site/: _worker.js, google1f94042d93f7e344.html, robots.txt, sitemap.xml (not yet deployed)",
-    "deploy: pages_deploy.py <site_dir> hk-aed (project root, run with this project's venv python); pages_deploy.py already uploads _worker.js as a dedicated form part"
+    "site/ — index.html, aed_data.json, aed_meta.json, icons; GSC package files in site/: _worker.js, google1f94042d93f7e344.html, robots.txt, sitemap.xml (deployed live 2026-10-23)",
+    "deploy: pages_deploy.py <site_dir> hkaed (project root, run with this project's venv python); pages_deploy.py already uploads _worker.js as a dedicated form part"
   ],
   "cautions": [
     "STANDING RULE (Daniel, 2026-10-18): every data or frontend update must also be pushed to GitHub repo qrmobile/hk-aed. update_aed_data.py auto-pushes aed_data.json; large files go via gh_push.py (github push-files). The GitHub connector pushes text only — binary assets need Daniel to upload manually.",
     "Zero-token hook hk-aed-data-watch compares the Fire Services CSV hash every 12h and only wakes the worker on real change; do not re-add the old daily cron.",
-    "Deploying the prepared GSC package switches this site from pure static to Pages advanced mode — verify the whole site afterwards, then push to GitHub.",
+    "The GSC package went live on 2026-10-23, switching this site from pure static to Pages advanced mode (verified working; files also pushed to GitHub). Keep _worker.js as a dedicated form part on every deploy.",
     "A citizen-reporting feature draft exists (Worker+KV, Telegram review). Do NOT deploy it without Daniel approving the draft.",
     "Fire Services data contains no AED photos anywhere — do not go looking again."
   ],
   "changelog": [
+    {
+      "date": "2026-10-25",
+      "by": "qrmobile (main-chat agent)",
+      "change": "Ported the new preview design to live (nearest 10 (recommended) / 20 toggle, A4 landscape print with map left + list right, white background); page now fetches ./aed_data.json + ./aed_meta.json at runtime so the daily Fire Services update keeps data fresh; restored aed_meta.json to production (it was missing, so the page had fallen back to the embedded 2026-10-14 snapshot); kept SEO (canonical/OG/JSON-LD) and the disclaimer section. Live verified after deploy."
+    },
     {
       "date": "2026-10-23",
       "by": "Muse (main-chat agent)",
