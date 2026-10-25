@@ -174,6 +174,28 @@
     .demo { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
     .demo p { margin: 0 0 10px; font-size: 14px; color: var(--muted); font-weight: 600; }
     .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .custom-place { margin-top: 16px; }
+    .custom-place label {
+      display: block; font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 8px;
+    }
+    .custom-place-row { display: flex; gap: 8px; }
+    .custom-place-row input {
+      flex: 1 1 auto; min-width: 0;
+      font: inherit; font-size: 16px; color: var(--ink);
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: 10px; padding: 11px 14px;
+    }
+    .custom-place-row input::placeholder { color: var(--muted); }
+    .custom-place-row input:focus-visible {
+      outline: 3px solid rgba(200, 16, 46, .45); outline-offset: 1px;
+    }
+    .custom-place-btn { flex: 0 0 auto; padding: 11px 18px; font-size: 15px; border-radius: 10px; }
+    .custom-place-btn:disabled { opacity: .55; cursor: wait; }
+    .custom-place-note { margin: 8px 0 0 !important; font-size: 13px !important; font-weight: 500 !important; min-height: 1.5em; }
+    @media (max-width: 560px) {
+      .custom-place-row { flex-direction: column; }
+      .custom-place-btn { width: 100%; justify-content: center; }
+    }
     .chip {
       border: 1px solid var(--line); background: var(--surface); color: var(--ink);
       border-radius: 999px; padding: 7px 14px; font-size: 14px; font-weight: 600; cursor: pointer;
@@ -388,6 +410,16 @@
         <div class="demo">
           <p>冇 GPS 或者想預覽效果？用示範位置（真實地點）試下：</p>
           <div class="chips" id="demoChips"></div>
+          <div class="custom-place">
+            <label for="customPlaceInput">或者打入你自己嘅真實地點</label>
+            <div class="custom-place-row">
+              <input id="customPlaceInput" type="text" inputmode="search" autocomplete="off"
+                placeholder="例：鴨脷洲邨利澤樓／旺角彌敦道 700 號／22.2444, 114.1521"
+                aria-describedby="customPlaceStatus">
+              <button class="btn btn-ghost custom-place-btn" id="customPlaceBtn" type="button">用呢個位置</button>
+            </div>
+            <p class="custom-place-note" id="customPlaceStatus" role="status">可以打地名、街道地址或者大廈名 — 查座標嗰陣，輸入嘅文字會傳去 OpenStreetMap；直接打「緯度, 經度」座標就只喺本機計算，唔會傳出去。</p>
+          </div>
         </div>
       </section>
 
@@ -462,6 +494,8 @@
   (function () {
     'use strict';
 
+    // 地圖標籤語言跟返頁面語言（繁體中文・香港），唔好跌返去英文預設。
+    var MAP_LOCALE = document.documentElement.lang || 'zh-Hant-HK';
     var FALLBACK_META = { updated: '2026-10-14', count: 4685, source: '香港消防處' };
     var FALLBACK_DATA = [
       ["消防處總部大廈", "九龍尖沙咀東部康莊道1號消防處總部大廈", "正門入口外", 22.30035, 114.18006, 1, "A", 1, ""],
@@ -485,7 +519,7 @@
     };
 
     var els = {};
-    ['locateBtn','locateStatus','limit10','limit20','demoChips','countNote','printBtn',
+    ['locateBtn','locateStatus','limit10','limit20','demoChips','customPlaceInput','customPlaceBtn','customPlaceStatus','countNote','printBtn',
      'map','mapFallback','resultList','appView','sheetView','backBtn',
      'sheetTitle','sheetMeta','sheetList','printMap','dataCount','dataUpdated','sheetSource'
     ].forEach(function (id) { els[id] = document.getElementById(id); });
@@ -546,6 +580,7 @@
       var map = MapHelpers.mountMap(els.map, {
         places: places,
         baseStyle: 'light',
+        locale: MAP_LOCALE,
         marker: markerHtml,
         onSelectPlace: function (index) {
           cards.forEach(function (card, i) {
@@ -655,6 +690,58 @@
       }, { enableHighAccuracy: false, timeout: 20000, maximumAge: 600000 });
     }
 
+    function parseCoordinates(text) {
+      var m = /^\s*(-?\d+(?:\.\d+)?)\s*[,，]\s*(-?\d+(?:\.\d+)?)\s*$/.exec(text);
+      if (!m) return null;
+      var lat = parseFloat(m[1]), lng = parseFloat(m[2]);
+      if (lat < -90 || lat > 90 || lng < -180 || lng > 180) return null;
+      return { lat: lat, lng: lng };
+    }
+    function inHongKong(lat, lng) {
+      return lat >= 22.13 && lat <= 22.58 && lng >= 113.82 && lng <= 114.46;
+    }
+    function searchCustomPlace() {
+      var query = els.customPlaceInput.value.trim();
+      if (!query) {
+        els.customPlaceStatus.textContent = '請先打入地點、地址或者座標，先撳「用呢個位置」。';
+        els.customPlaceInput.focus();
+        return;
+      }
+      var coords = parseCoordinates(query);
+      if (coords) {
+        if (!inHongKong(coords.lat, coords.lng)) {
+          els.customPlaceStatus.textContent = '呢組座標似乎唔喺香港範圍內，AED 資料只覆蓋香港，請檢查清楚再試。';
+          return;
+        }
+        els.customPlaceStatus.textContent = '已用你輸入嘅座標做起點。';
+        setPosition(coords.lat, coords.lng, '自訂位置（' + query + '）', null);
+        return;
+      }
+      // 地名／地址：經 OpenStreetMap Nominatim 查座標（查詢文字會傳送去該服務）。
+      els.customPlaceBtn.disabled = true;
+      els.customPlaceStatus.textContent = '正在搜尋「' + query + '」嘅位置…';
+      var url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=hk&accept-language=zh-Hant&q=' +
+        encodeURIComponent(query);
+      fetch(url)
+        .then(function (r) { if (!r.ok) throw new Error('search'); return r.json(); })
+        .then(function (results) {
+          els.customPlaceBtn.disabled = false;
+          if (!Array.isArray(results) || !results.length) {
+            els.customPlaceStatus.textContent = '搵唔到「' + query + '」呢個地點 — 試下打詳細啲（例如連埋街道名或者大廈名），或者直接打「緯度, 經度」座標。';
+            return;
+          }
+          var lat = parseFloat(results[0].lat), lng = parseFloat(results[0].lon);
+          if (!isFinite(lat) || !isFinite(lng)) throw new Error('coords');
+          var resolved = results[0].display_name || query;
+          els.customPlaceStatus.textContent = '搵到位置：' + resolved;
+          setPosition(lat, lng, query, null);
+        })
+        .catch(function () {
+          els.customPlaceBtn.disabled = false;
+          els.customPlaceStatus.textContent = '地點搜尋服務暫時用唔到 — 可以稍後再試，或者直接打「緯度, 經度」座標（唔使經搜尋服務）。';
+        });
+    }
+
     function setLimit(n) {
       state.limit = n;
       els.limit10.setAttribute('aria-pressed', String(n === 10));
@@ -699,6 +786,7 @@
       var map = MapHelpers.mountMap(els.printMap, {
         places: placesFor(state.items),
         baseStyle: 'light',
+        locale: MAP_LOCALE,
         marker: markerHtml
       }, function () {
         els.printMap.innerHTML = '<div style="padding:16px;color:#555;font-size:13px">地圖暫時未能顯示，清單編號順序即為距離次序。</div>';
@@ -722,6 +810,10 @@
 
     /* ---------- wiring ---------- */
     els.locateBtn.addEventListener('click', locate);
+    els.customPlaceBtn.addEventListener('click', searchCustomPlace);
+    els.customPlaceInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); searchCustomPlace(); }
+    });
     els.limit10.addEventListener('click', function () { setLimit(10); });
     els.limit20.addEventListener('click', function () { setLimit(20); });
     els.printBtn.addEventListener('click', showSheet);
