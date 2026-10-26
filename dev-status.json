@@ -20,6 +20,11 @@
     {
       "date": "2026-10-26",
       "by": "qrmobile (main-chat agent)",
+      "change": "Ported preview design to live: A4 print sheet footer now shows a self-promotion link (brand-red bold, links to https://hkaed.pages.dev) so posters carry the site address and readers can check live data; page still fetches ./aed_data.json + ./aed_meta.json at runtime so daily Fire Services update keeps data fresh; kept Traditional Chinese map locale, local-first place search, SEO and disclaimer. Live verified after deploy."
+    },
+    {
+      "date": "2026-10-26",
+      "by": "qrmobile (main-chat agent)",
       "change": "Ported fixed preview design to live: custom-location search now matches local AED data first (venue name + address, offline, input not sent out) so places like Lei Moon House (利滿樓) resolve, then falls back to OSM with Hong Kong retry and HK-range check; not-found prompt now suggests including the estate name; page still fetches ./aed_data.json + ./aed_meta.json at runtime so daily Fire Services update keeps data fresh; kept Traditional Chinese map locale, SEO and disclaimer. Live verified after deploy."
     },
     {
