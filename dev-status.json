@@ -3,7 +3,7 @@
   "name": "香港 AED 搜尋器",
   "url": "https://hkaed.pages.dev/",
   "status": "live",
-  "updated": "2026-10-25",
+  "updated": "2026-10-26",
   "managedBy": "Daniel's AI agents, jointly. READ THIS FILE before changing or redeploying this site, and UPDATE it (and the changelog) after you do. A Pages redeploy replaces ALL files, so a deploy directory must contain every file listed below.",
   "files": [
     "site/ — index.html, aed_data.json, aed_meta.json, icons; GSC package files in site/: _worker.js, google1f94042d93f7e344.html, robots.txt, sitemap.xml (deployed live 2026-10-23)",
@@ -17,6 +17,11 @@
     "Fire Services data contains no AED photos anywhere — do not go looking again."
   ],
   "changelog": [
+    {
+      "date": "2026-10-26",
+      "by": "qrmobile (main-chat agent)",
+      "change": "Ported fixed preview design to live: custom-location search now matches local AED data first (venue name + address, offline, input not sent out) so places like Lei Moon House (利滿樓) resolve, then falls back to OSM with Hong Kong retry and HK-range check; not-found prompt now suggests including the estate name; page still fetches ./aed_data.json + ./aed_meta.json at runtime so daily Fire Services update keeps data fresh; kept Traditional Chinese map locale, SEO and disclaimer. Live verified after deploy."
+    },
     {
       "date": "2026-10-25",
       "by": "qrmobile (main-chat agent)",
