@@ -20,6 +20,11 @@
     {
       "date": "2026-10-26",
       "by": "qrmobile (main-chat agent)",
+      "change": "Ported written-Chinese (書面語) preview design to live, first station in user order hkaed → geohk → geotw → newshk → hksearch → porthk → qrm: all interface copy converted from Cantonese colloquial to standard written Chinese, Traditional characters unchanged (e.g. title 尋找最近的 AED, emergency banner 請先致電 999 求助, button 使用此位置, print footer 免費查詢你附近的 AED); third-party proper noun AED 搵得到 and Fire Services data unchanged; page still fetches ./aed_data.json + ./aed_meta.json at runtime so daily update keeps data fresh; kept SEO and disclaimer. Live verified after deploy."
+    },
+    {
+      "date": "2026-10-26",
+      "by": "qrmobile (main-chat agent)",
       "change": "Ported preview design to live: A4 print sheet footer now shows a self-promotion link (brand-red bold, links to https://hkaed.pages.dev) so posters carry the site address and readers can check live data; page still fetches ./aed_data.json + ./aed_meta.json at runtime so daily Fire Services update keeps data fresh; kept Traditional Chinese map locale, local-first place search, SEO and disclaimer. Live verified after deploy."
     },
     {
