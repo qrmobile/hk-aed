@@ -418,7 +418,7 @@
                 aria-describedby="customPlaceStatus">
               <button class="btn btn-ghost custom-place-btn" id="customPlaceBtn" type="button">用呢個位置</button>
             </div>
-            <p class="custom-place-note" id="customPlaceStatus" role="status">可以打地名、街道地址或者大廈名 — 查座標嗰陣，輸入嘅文字會傳去 OpenStreetMap；直接打「緯度, 經度」座標就只喺本機計算，唔會傳出去。</p>
+            <p class="custom-place-note" id="customPlaceStatus" role="status">可以打地名、街道地址或者大廈名（連屋邨座數都得，例如「利滿樓」）— 系統會先喺本機嘅 AED 資料入面搵，搵唔到先將輸入文字傳去 OpenStreetMap 查座標；直接打「緯度, 經度」座標就只喺本機計算，唔會傳出去。</p>
           </div>
         </div>
       </section>
@@ -700,6 +700,42 @@
     function inHongKong(lat, lng) {
       return lat >= 22.13 && lat <= 22.58 && lng >= 113.82 && lng <= 114.46;
     }
+    // 先喺本機 AED 資料入面搵：唔少屋邨座數、大廈同場地名（例如「利滿樓」）
+    // 本身就寫喺消防處資料嘅場地名／地址入面，OSM 未必有收錄嗰座大廈，
+    // 所以唔好一嚟就靠網上地圖搜尋。呢步完全喺本機做，輸入文字唔會傳出去。
+    function findInLocalData(query) {
+      if (!state.data) return null;
+      var q = query.replace(/\s+/g, '');
+      if (!q) return null;
+      var best = null, bestScore = 0;
+      state.data.forEach(function (row) {
+        var name = String(row[0]).replace(/\s+/g, '');
+        var addr = String(row[1]).replace(/\s+/g, '');
+        var score = 0;
+        if (name === q) score = 4;                        // 場地名完全吻合
+        else if (name.indexOf(q) !== -1) score = 3;       // 場地名包含輸入
+        else if (addr.indexOf(q) !== -1) score = 2;       // 地址包含輸入（例如座數名）
+        else if (name.length >= 3 && q.indexOf(name) !== -1) score = 1; // 輸入包含場地名（例如「鴨脷洲邨利滿樓」對「鴨脷洲邨」）
+        if (score > bestScore) { bestScore = score; best = row; }
+      });
+      return best;
+    }
+    function nominatimSearch(q) {
+      var url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=3&countrycodes=hk&accept-language=zh-Hant&q=' +
+        encodeURIComponent(q);
+      return fetch(url)
+        .then(function (r) { if (!r.ok) throw new Error('search'); return r.json(); })
+        .then(function (results) {
+          if (!Array.isArray(results)) return null;
+          for (var i = 0; i < results.length; i++) {
+            var lat = parseFloat(results[i].lat), lng = parseFloat(results[i].lon);
+            if (isFinite(lat) && isFinite(lng) && inHongKong(lat, lng)) {
+              return { lat: lat, lng: lng, display: results[i].display_name || q };
+            }
+          }
+          return null;
+        });
+    }
     function searchCustomPlace() {
       var query = els.customPlaceInput.value.trim();
       if (!query) {
@@ -717,24 +753,27 @@
         setPosition(coords.lat, coords.lng, '自訂位置（' + query + '）', null);
         return;
       }
-      // 地名／地址：經 OpenStreetMap Nominatim 查座標（查詢文字會傳送去該服務）。
+      // 第一步：本機 AED 資料（場地名＋地址）— 唔使經任何搜尋服務。
+      var local = findInLocalData(query);
+      if (local) {
+        els.customPlaceStatus.textContent = '喺消防處 AED 資料入面搵到「' + local[0] + '」（' + local[1] + '），已用嗰個位置做起點。';
+        setPosition(local[3], local[4], query, null);
+        return;
+      }
+      // 第二步：經 OpenStreetMap Nominatim 查座標（查詢文字會傳送去該服務）；
+      // 原字眼搵唔到會自動加「香港」再試一次。
       els.customPlaceBtn.disabled = true;
       els.customPlaceStatus.textContent = '正在搜尋「' + query + '」嘅位置…';
-      var url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=hk&accept-language=zh-Hant&q=' +
-        encodeURIComponent(query);
-      fetch(url)
-        .then(function (r) { if (!r.ok) throw new Error('search'); return r.json(); })
-        .then(function (results) {
+      nominatimSearch(query)
+        .then(function (hit) { return hit || nominatimSearch(query + ' 香港'); })
+        .then(function (hit) {
           els.customPlaceBtn.disabled = false;
-          if (!Array.isArray(results) || !results.length) {
-            els.customPlaceStatus.textContent = '搵唔到「' + query + '」呢個地點 — 試下打詳細啲（例如連埋街道名或者大廈名），或者直接打「緯度, 經度」座標。';
+          if (!hit) {
+            els.customPlaceStatus.textContent = '搵唔到「' + query + '」呢個地點 — 試下連埋屋邨或者地區名一齊打（例如「鴨脷洲邨利滿樓」），或者打詳細地址，又或者直接打「緯度, 經度」座標。';
             return;
           }
-          var lat = parseFloat(results[0].lat), lng = parseFloat(results[0].lon);
-          if (!isFinite(lat) || !isFinite(lng)) throw new Error('coords');
-          var resolved = results[0].display_name || query;
-          els.customPlaceStatus.textContent = '搵到位置：' + resolved;
-          setPosition(lat, lng, query, null);
+          els.customPlaceStatus.textContent = '搵到位置：' + hit.display;
+          setPosition(hit.lat, hit.lng, query, null);
         })
         .catch(function () {
           els.customPlaceBtn.disabled = false;
