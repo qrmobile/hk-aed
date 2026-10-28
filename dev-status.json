@@ -20,6 +20,11 @@
     {
       "date": "2026-10-28",
       "by": "qrmobile (main-chat agent)",
+      "change": "Removed 利滿樓 as the example in the AED app: custom-location input hint and not-found hint now use generic wording (no specific building), plus two code comments cleaned; FSD data and search logic unchanged (searching 利滿樓 still finds its real AEDs)."
+    },
+    {
+      "date": "2026-10-28",
+      "by": "qrmobile (main-chat agent)",
       "change": "地圖 locale 由 zh-Hant-HK 改為 zh-Hant（測試）：主地圖＋A4 列印地圖共用固定值 'zh-Hant'，頁面語言維持 zh-Hant-HK；其餘內容不變。底圖標籤是否轉為繁體中文待用戶手機實測（沙盒無法載入圖磚，未能目測確認）。"
     },
     {
