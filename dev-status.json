@@ -3,7 +3,7 @@
   "name": "香港 AED 搜尋器",
   "url": "https://hkaed.pages.dev/",
   "status": "live",
-  "updated": "2026-10-26",
+  "updated": "2026-10-28",
   "managedBy": "Daniel's AI agents, jointly. READ THIS FILE before changing or redeploying this site, and UPDATE it (and the changelog) after you do. A Pages redeploy replaces ALL files, so a deploy directory must contain every file listed below.",
   "files": [
     "site/ — index.html, aed_data.json, aed_meta.json, icons; GSC package files in site/: _worker.js, google1f94042d93f7e344.html, robots.txt, sitemap.xml (deployed live 2026-10-23)",
@@ -17,6 +17,16 @@
     "Fire Services data contains no AED photos anywhere — do not go looking again."
   ],
   "changelog": [
+    {
+      "date": "2026-10-28",
+      "by": "qrmobile (main-chat agent)",
+      "change": "地圖 locale 由 zh-Hant-HK 改為 zh-Hant（測試）：主地圖＋A4 列印地圖共用固定值 'zh-Hant'，頁面語言維持 zh-Hant-HK；其餘內容不變。底圖標籤是否轉為繁體中文待用戶手機實測（沙盒無法載入圖磚，未能目測確認）。"
+    },
+    {
+      "date": "2026-10-28",
+      "by": "qrmobile",
+      "change": "Top-left title link to app homepage (all-apps rule): page title changed to a link to /; single-page app, so this reloads the homepage; style unchanged."
+    },
     {
       "date": "2026-10-26",
       "by": "qrmobile (main-chat agent)",
