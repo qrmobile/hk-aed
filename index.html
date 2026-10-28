@@ -421,7 +421,7 @@
                 aria-describedby="customPlaceStatus">
               <button class="btn btn-ghost custom-place-btn" id="customPlaceBtn" type="button">使用此位置</button>
             </div>
-            <p class="custom-place-note" id="customPlaceStatus" role="status">可輸入地名、街道地址或大廈名稱（連屋邨座數也可以，例如「利滿樓」）— 系統會先在本機的 AED 資料中搜尋，找不到才會把輸入文字傳送至 OpenStreetMap 查詢座標；直接輸入「緯度, 經度」座標則只在本機計算，不會傳送出去。</p>
+            <p class="custom-place-note" id="customPlaceStatus" role="status">可輸入地名、街道地址或大廈名稱（連屋邨座數也可以）— 系統會先在本機的 AED 資料中搜尋，找不到才會把輸入文字傳送至 OpenStreetMap 查詢座標；直接輸入「緯度, 經度」座標則只在本機計算，不會傳送出去。</p>
           </div>
         </div>
       </section>
@@ -704,7 +704,7 @@
     function inHongKong(lat, lng) {
       return lat >= 22.13 && lat <= 22.58 && lng >= 113.82 && lng <= 114.46;
     }
-    // 先在本機 AED 資料中搜尋：不少屋邨座數、大廈和場地名稱（例如「利滿樓」）
+    // 先在本機 AED 資料中搜尋：不少屋邨座數、大廈和場地名稱
     // 本身就寫在消防處資料的場地名稱／地址中，OSM 未必有收錄該座大廈，
     // 所以不要一開始就依賴網上地圖搜尋。這一步完全在本機進行，輸入文字不會傳送出去。
     function findInLocalData(query) {
@@ -719,7 +719,7 @@
         if (name === q) score = 4;                        // 場地名完全吻合
         else if (name.indexOf(q) !== -1) score = 3;       // 場地名包含輸入
         else if (addr.indexOf(q) !== -1) score = 2;       // 地址包含輸入（例如座數名）
-        else if (name.length >= 3 && q.indexOf(name) !== -1) score = 1; // 輸入包含場地名（例如「鴨脷洲邨利滿樓」對「鴨脷洲邨」）
+        else if (name.length >= 3 && q.indexOf(name) !== -1) score = 1; // 輸入包含場地名
         if (score > bestScore) { bestScore = score; best = row; }
       });
       return best;
@@ -773,7 +773,7 @@
         .then(function (hit) {
           els.customPlaceBtn.disabled = false;
           if (!hit) {
-            els.customPlaceStatus.textContent = '找不到「' + query + '」這個地點 — 請嘗試連同屋邨或地區名稱一併輸入（例如「鴨脷洲邨利滿樓」），或輸入詳細地址，或直接輸入「緯度, 經度」座標。';
+            els.customPlaceStatus.textContent = '找不到「' + query + '」這個地點 — 請嘗試連同屋邨或地區名稱一併輸入，或輸入詳細地址，或直接輸入「緯度, 經度」座標。';
             return;
           }
           els.customPlaceStatus.textContent = '找到位置：' + hit.display;
