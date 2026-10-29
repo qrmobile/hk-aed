@@ -114,6 +114,9 @@
     .emergency {
       background: var(--red);
       color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
     }
     .emergency .wrap {
       display: flex; align-items: center; gap: 10px;
@@ -371,7 +374,7 @@
     @page { size: A4 landscape; margin: 8mm; }
     @media print {
       body { background: #fff; }
-      .app-view, .sheet-toolbar, .emergency { display: none !important; }
+      .app-view, .sheet-toolbar, .emergency, .cpr { display: none !important; }
       .sheet-view .wrap { width: 100%; }
       .sheet-scroll { overflow: visible; padding: 0; }
       .sheet {
@@ -380,7 +383,7 @@
       }
     }
   </style>
-<style>.disclaimer{margin:24px auto;max-width:960px;padding:0 16px}.disclaimer-card{background:#fff;border:1px solid #e2e2e2;border-left:6px solid #c8102e;border-radius:12px;padding:18px 20px}.disclaimer-card h2{margin:0 0 8px;font-size:19px}.disclaimer-card p{margin:0 0 8px;line-height:1.7;color:#333}.disclaimer-card p:last-child{margin-bottom:0}</style></head>
+<style>.disclaimer{margin:24px auto;max-width:960px;padding:0 16px}.disclaimer-card{background:#fff;border:1px solid #e2e2e2;border-left:6px solid #c8102e;border-radius:12px;padding:18px 20px}.disclaimer-card h2{margin:0 0 8px;font-size:19px}.disclaimer-card p{margin:0 0 8px;line-height:1.7;color:#333}.disclaimer-card p:last-child{margin-bottom:0}</style><style>.nearest-hero{margin:18px 0 0;background:#fff;border:1px solid var(--line);border-left:6px solid var(--red);border-radius:12px;padding:16px 18px}.nearest-hero-label{font-size:13px;font-weight:700;color:#666;letter-spacing:.02em}.nearest-hero-main{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:6px}.nearest-hero-distance{font-size:44px;line-height:1;font-weight:800;color:var(--red);white-space:nowrap}.nearest-hero-info{display:flex;flex-direction:column;gap:2px;min-width:220px;flex:1}.nearest-hero-info strong{font-size:18px;line-height:1.4}.nearest-hero-info span{font-size:14px;color:#333;line-height:1.5}.nearest-hero-actions{display:flex;gap:16px;margin-top:10px;font-size:14px;font-weight:700}.nearest-hero-actions a{color:var(--red)}.cpr{margin:24px auto;max-width:960px;padding:0 16px}.cpr-card{background:#fff;border:1px solid #e2e2e2;border-left:6px solid #c8102e;border-radius:12px;padding:18px 20px}.cpr-card h2{margin:0 0 8px;font-size:19px}.cpr-card p{margin:0 0 8px;line-height:1.7;color:#333}.cpr-steps{margin:8px 0;padding-left:22px;line-height:1.8;color:#333}.cpr-steps li{margin-bottom:8px}.cpr-source{font-size:13px;color:#666}</style></head>
 <body>
   <a class="skip-link" href="#resultsHeading">跳至 AED 清單</a>
 
@@ -417,7 +420,7 @@
             <label for="customPlaceInput">或輸入你自己的真實地點</label>
             <div class="custom-place-row">
               <input id="customPlaceInput" type="text" inputmode="search" autocomplete="off"
-                placeholder="例：鴨脷洲邨利澤樓／旺角彌敦道 700 號／22.2444, 114.1521"
+                placeholder="例：中環皇后大道中 99 號／旺角彌敦道 700 號／22.3193, 114.1694"
                 aria-describedby="customPlaceStatus">
               <button class="btn btn-ghost custom-place-btn" id="customPlaceBtn" type="button">使用此位置</button>
             </div>
@@ -435,6 +438,20 @@
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             產生 A4 列印版
           </button>
+        </div>
+        <div class="nearest-hero" id="nearestHero" hidden>
+          <div class="nearest-hero-label">最近的 AED（直線距離）</div>
+          <div class="nearest-hero-main">
+            <span class="nearest-hero-distance" id="nearestDistance">—</span>
+            <div class="nearest-hero-info">
+              <strong id="nearestName">—</strong>
+              <span id="nearestAddress">—</span>
+            </div>
+          </div>
+          <div class="nearest-hero-actions">
+            <a href="tel:999">致電 999</a>
+            <a href="#cprSteps">CPR 三步 ↓</a>
+          </div>
         </div>
         <div class="results-grid">
           <div class="map-box">
@@ -508,7 +525,6 @@
       ["上環消防局", "香港西消防街2號", "正門入口外", 22.289024, 114.148048, 1, "A", 1, ""]
     ];
     var DEMOS = [
-      { label: '鴨脷洲邨', lat: 22.244431, lng: 114.152103 },
       { label: '中環站', lat: 22.281675, lng: 114.158781 },
       { label: '尖沙咀・香港文化中心', lat: 22.293904, lng: 114.170633 },
       { label: '旺角站', lat: 22.319253, lng: 114.169355 },
@@ -525,7 +541,7 @@
     var els = {};
     ['locateBtn','locateStatus','limit10','limit20','demoChips','customPlaceInput','customPlaceBtn','customPlaceStatus','countNote','printBtn',
      'map','mapFallback','resultList','appView','sheetView','backBtn',
-     'sheetTitle','sheetMeta','sheetList','printMap','dataCount','dataUpdated','sheetSource'
+     'sheetTitle','sheetMeta','sheetList','printMap','dataCount','dataUpdated','sheetSource','nearestHero','nearestDistance','nearestName','nearestAddress'
     ].forEach(function (id) { els[id] = document.getElementById(id); });
 
     function escapeHtml(v) {
@@ -622,6 +638,7 @@
 
       if (!items.length) {
         els.resultList.innerHTML = '<div class="empty-card"><strong>附近找不到 AED</strong>請移動到其他位置再試。</div>';
+        els.nearestHero.hidden = true;
         renderMainMap([], []);
         return;
       }
@@ -651,6 +668,11 @@
         els.resultList.appendChild(card);
         cards.push(card);
       });
+      var nearest = items[0];
+      els.nearestDistance.textContent = formatDistance(nearest.distance);
+      els.nearestName.textContent = nearest.row[0];
+      els.nearestAddress.textContent = nearest.row[1];
+      els.nearestHero.hidden = false;
       renderMainMap(items, cards);
     }
 
@@ -897,6 +919,18 @@
     });
   })();
   </script>
+<section class="cpr" id="cprSteps" aria-labelledby="cprTitle">
+  <div class="cpr-card">
+    <h2 id="cprTitle">心肺復甦法三步（成人）</h2>
+    <p>遇上有人心臟驟停，先致電 999，再按以下三步施救。以下步驟只供參考，實際操作請遵從 999 接線員、現場急救人員及 AED 語音指示。</p>
+    <ol class="cpr-steps">
+      <li><strong>致電 999 求助</strong> — 立即致電 999，聽從接線員調派後指引，並請旁人協助拿取最近的 AED。</li>
+      <li><strong>施行心肺復甦法</strong> — 按壓位置為胸骨下半部，雙手互扣、用掌根按壓；速度每分鐘 100 至 120 次（約每秒兩下），深度 5 至 6 厘米；若無人工呼吸面罩，可只做連續胸外按壓。</li>
+      <li><strong>使用 AED</strong> — AED 送到後，依序「開」機、「貼」上電極片、「電」擊，並全程跟從 AED 語音指示；分析及電擊時切勿接觸患者。</li>
+    </ol>
+    <p class="cpr-source">內容參考：<a href="https://www.hkfsd.gov.hk/chi/education/cpr_aed_olr.html" target="_blank" rel="noopener">香港消防處心肺復甦法及自動心臟除顫器網上學習資源</a>。</p>
+  </div>
+</section>
 <section class="disclaimer" aria-labelledby="disclaimerTitle">
       <div class="disclaimer-card">
         <h2 id="disclaimerTitle">重要免責聲明</h2>
