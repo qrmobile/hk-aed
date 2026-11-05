@@ -3,11 +3,12 @@
   "name": "香港 AED 搜尋器",
   "url": "https://hkaed.pages.dev/",
   "status": "live",
-  "updated": "2026-10-29",
+  "updated": "2026-11-05",
   "managedBy": "Daniel's AI agents, jointly. READ THIS FILE before changing or redeploying this site, and UPDATE it (and the changelog) after you do. A Pages redeploy replaces ALL files, so a deploy directory must contain every file listed below.",
   "files": [
     "site/ — index.html, aed_data.json, aed_meta.json, icons; GSC package files in site/: _worker.js, google1f94042d93f7e344.html, robots.txt, sitemap.xml (deployed live 2026-10-23)",
-    "deploy: pages_deploy.py <site_dir> hkaed (project root, run with this project's venv python); pages_deploy.py already uploads _worker.js as a dedicated form part"
+    "deploy: pages_deploy.py <site_dir> hkaed (project root, run with this project's venv python); pages_deploy.py already uploads _worker.js as a dedicated form part",
+    "privacy.html （私隱政策，2026-11-02 上線）"
   ],
   "cautions": [
     "STANDING RULE (Daniel, 2026-10-18): every data or frontend update must also be pushed to GitHub repo qrmobile/hk-aed. update_aed_data.py auto-pushes aed_data.json; large files go via gh_push.py (github push-files). The GitHub connector pushes text only — binary assets need Daniel to upload manually.",
@@ -17,6 +18,26 @@
     "Fire Services data contains no AED photos anywhere — do not go looking again."
   ],
   "changelog": [
+    {
+      "date": "2026-11-05",
+      "by": "qrmobile",
+      "change": "加入 ads.txt（用戶 2026-11-05 指示，aehk＋hkaed）：網站根目錄加 ads.txt，內容為 google.com, pub-3676732590934354, DIRECT, f08c47fec0942fa0，供 AdSense 核實授權賣家；此前 AdSense 後台報 ads.txt Not found。注意：本地 index.html 第 10 行帳戶標籤（AED 對話備妥、待用戶確認部署）不在本次部署範圍內。"
+    },
+    {
+      "date": "2026-11-05",
+      "by": "qrmobile (main-chat agent)",
+      "change": "主頁加入 Google AdSense 帳戶關聯標籤（ca-pub-3676732590934354）：標籤只作帳戶關聯，不會即時顯示廣告；未加廣告程式碼、廣告單元及 ads.txt；站內「免費」文案維持不變（站內從未寫「沒有廣告」，亦無廣告追蹤 Cookie 聲明）。"
+    },
+    {
+      "date": "2026-11-02",
+      "by": "qrmobile",
+      "change": "新增私隱政策頁 /privacy.html（香港《個人資料（私隱）條例》標準，聯絡 qrmobile@agentmail.to；用戶批准上線 geohk、hkaed、hksearch、porthk 四站），其餘內容不變。內容部署 19b67655。"
+    },
+    {
+      "date": "2026-10-29",
+      "by": "qrmobile",
+      "change": "全站輕量互連（用戶批准第一＋第二批）：頁尾前新增「相關工具」列：急症室輪候・香港＋全部工具（QRM 主頁）；內容部署 4fa0fe93，生產驗證主頁正常、緊急及 CPR 內容齊全。"
+    },
     {
       "date": "2026-10-29",
       "by": "qrmobile (main-chat agent)",
